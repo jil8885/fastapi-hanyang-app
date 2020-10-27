@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 from transport.shuttle.get_info import get_departure_info
 from transport.shuttle.date import is_semester
-from transport.bus.get_arrival_info import get_bus_info, get_bus_timetable
+from transport.bus.get_arrival_info import get_bus_info, get_bus_timetable, get_realtime_departure
 from transport.subway.get_info import get_subway_info, get_subway_timetable
 
 from library.reading_room import get_reading_room_seat
@@ -77,12 +77,26 @@ async def get_bus_info_by_route(request: BusRequest):
     is_weekend = True if is_weekend == 'weekend' else False
     campus = request.campus == "Seoul"
 
+    guest_house_stop = '216000379'
+    main_gate_stop = '216000719'
+    line_10_1 = '216000068'
+    line_3102 = '216000061'
+    line_707_1 = '216000070'
+
     if campus:
         return JSONResponse({})
     else:
-        return JSONResponse({"realtime": get_bus_info()[request.route],
-                             "timetable": [{"time": x["time"].strftime("%H:%M")} for x in
-                                           get_bus_timetable(is_weekend)[request.route]]})
+        if request.route == "10-1":
+            return JSONResponse({"realtime": get_realtime_departure(guest_house_stop, line_10_1),
+                                 "timetable": [{"time": x["time"].strftime("%H:%M")} for x in
+                                               get_bus_timetable(is_weekend, "10-1")]})
+        elif request.route == "3102":
+            return JSONResponse({"realtime": get_realtime_departure(guest_house_stop, line_3102),
+                                 "timetable": [{"time": x["time"].strftime("%H:%M")} for x in
+                                               get_bus_timetable(is_weekend, "3102")]})
+        else:
+            return JSONResponse({"realtime": get_realtime_departure(main_gate_stop, line_707_1),
+                                 "timetable": []})
 
 
 @hanyang_app_router.post('/library')
