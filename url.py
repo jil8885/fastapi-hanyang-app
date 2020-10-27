@@ -104,7 +104,8 @@ async def get_library_list(request: CampusRequest):
     campus = request.campus == "Seoul"
     response = {}
     for x in get_reading_room_seat(campus=campus)[0]:
-        response[x['name']] = {'active': x['activeTotal'], 'occupied': x['occupied'], 'available': x['available']}
+        if "미개방" not in x['name']:
+            response[x['name']] = {'active': x['activeTotal'], 'occupied': x['occupied'], 'available': x['available']}
 
     return JSONResponse(response)
 
