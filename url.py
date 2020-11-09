@@ -38,6 +38,16 @@ async def get_shuttle_stop(request: ShuttleRequest):
     return JSONResponse(result)
 
 
+@hanyang_app_router.post('/shuttle/by-stop')
+async def get_shuttle_stop(request: ShuttleRequest):
+    """Get Departure Info for specific bus stop"""
+    bus_stop = request.busStop
+    bus_to_come_dh, bus_to_come_dy, bus_to_come_c, _ = get_departure_info(path=bus_stop, num_of_data=999)
+    result = {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh], "DY": [x.strftime("%H:%M") for x in bus_to_come_dy],
+              "C": [x.strftime("%H:%M") for x in bus_to_come_c]}
+    return JSONResponse(result)
+
+
 @hanyang_app_router.post('/subway')
 async def get_subway(request: CampusRequest):
     """Get Departure Info for specific campus"""
