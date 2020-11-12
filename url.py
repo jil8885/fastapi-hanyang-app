@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from transport.shuttle.get_info import get_departure_info
+from transport.shuttle.get_info import get_departure_info, get_first_last_departure
 from transport.shuttle.date import is_semester
 from transport.bus.get_arrival_info import get_bus_info, get_bus_timetable, get_realtime_departure
 from transport.subway.get_info import get_subway_info, get_subway_timetable
@@ -43,8 +43,17 @@ async def get_shuttle_stop(request: ShuttleRequest):
     """Get Departure Info for specific bus stop"""
     bus_stop = request.busStop
     bus_to_come_dh, bus_to_come_dy, bus_to_come_c, _ = get_departure_info(path=bus_stop, num_of_data=999)
-    result = {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh], "DY": [x.strftime("%H:%M") for x in bus_to_come_dy],
-              "C": [x.strftime("%H:%M") for x in bus_to_come_c]}
+    _, _, bus_info_dh, bus_info_dy, bus_info_c = get_first_last_departure(path=bus_stop)
+    first_last_info = {"DH": [x.strftime("%H:%M") for x in bus_info_dh], "DY": [x.strftime("%H:%M") for x in bus_info_dy], "C": [x.strftime("%H:%M") for x in bus_info_c]}
+
+    location = {"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj",
+                 "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0", "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
+
+    stop_view = {"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj",
+                 "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0", "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
+
+    result = {"location": "", "roadView": stop_view[bus_stop], "first_last": first_last_info,"timetable": {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh], "DY": [x.strftime("%H:%M") for x in bus_to_come_dy],
+              "C": [x.strftime("%H:%M") for x in bus_to_come_c]}}
     return JSONResponse(result)
 
 
