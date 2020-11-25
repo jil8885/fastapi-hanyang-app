@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from firebase_admin import messaging
 
 from transport.shuttle.get_info import get_departure_info, get_first_last_departure
 from transport.shuttle.date import is_semester
@@ -127,6 +128,33 @@ async def get_library_list(request: CampusRequest):
             response[x['name']] = {'active': x['activeTotal'], 'occupied': x['occupied'], 'available': x['available']}
 
     return JSONResponse(response)
+
+
+@hanyang_app_router.get('/library')
+async def get_library_list():
+    response = {}
+    for x in get_reading_room_seat(campus=0)[0]:
+        if "미개방" not in x['name'] and x['activeTotal']:
+            response[x['name']] = {'active': x['activeTotal'], 'occupied': x['occupied'], 'available': x['available']}
+
+    rooms = {"제1열람실": "room_1", "제2열람실": "room_2", "제3열람실": "room_3", "제4열람실": "room_4"}
+    languages = ["ko_KR", "en_US", "zh"]
+    for name, room in response.items():
+        if room['available'] > 0:
+            for lang in languages:
+                topic = f"{rooms[name]}_{lang}"
+                print(topic)
+                # See documentation on defining a message payload.
+                message = messaging.Message(
+                    notification=messaging.Notification(
+                        title=f"{rooms[name]}에서 자리를 발견했다냥",
+                        body="어서 열람실로 돌진하라냥!"
+                    ),
+                    topic=topic,
+                )
+                messaging.send(message)
+
+    return ''
 
 
 @hanyang_app_router.post('/food')
