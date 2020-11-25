@@ -147,7 +147,7 @@ async def get_library_list():
                 # See documentation on defining a message payload.
                 message = messaging.Message(
                     notification=messaging.Notification(
-                        title=f"{rooms[name]}에서 자리를 발견했다냥",
+                        title=f"{name}에서 자리를 발견했다냥",
                         body="어서 열람실로 돌진하라냥!"
                     ),
                     topic=topic,
