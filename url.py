@@ -9,7 +9,7 @@ from transport.subway.get_info import get_subway_info, get_subway_timetable
 
 from library.reading_room import get_reading_room_seat
 
-from food.menu import CafeteriaSeoul, CafeteriaERICA, get_recipe
+from food.menu import CafeteriaSeoul, CafeteriaERICA, get_recipe, get_recipe_all_cafeteria
 
 from app.common.models import ShuttleRequest, CampusRequest, BusRequest, MenuRequest
 
@@ -45,16 +45,21 @@ async def get_shuttle_stop(request: ShuttleRequest):
     bus_stop = request.busStop
     bus_to_come_dh, bus_to_come_dy, bus_to_come_c, _ = get_departure_info(path=bus_stop, num_of_data=999)
     _, _, bus_info_dh, bus_info_dy, bus_info_c = get_first_last_departure(path=bus_stop)
-    first_last_info = {"DH": [x.strftime("%H:%M") for x in bus_info_dh], "DY": [x.strftime("%H:%M") for x in bus_info_dy], "C": [x.strftime("%H:%M") for x in bus_info_c]}
+    first_last_info = {"DH": [x.strftime("%H:%M") for x in bus_info_dh],
+                       "DY": [x.strftime("%H:%M") for x in bus_info_dy], "C": [x.strftime("%H:%M") for x in bus_info_c]}
 
     location = {"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj",
-                 "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0", "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
+                "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0",
+                "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
 
     stop_view = {"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj",
-                 "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0", "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
+                 "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0",
+                 "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
 
-    result = {"location": "", "roadView": stop_view[bus_stop], "first_last": first_last_info,"timetable": {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh], "DY": [x.strftime("%H:%M") for x in bus_to_come_dy],
-              "C": [x.strftime("%H:%M") for x in bus_to_come_c]}}
+    result = {"location": "", "roadView": stop_view[bus_stop], "first_last": first_last_info,
+              "timetable": {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh],
+                            "DY": [x.strftime("%H:%M") for x in bus_to_come_dy],
+                            "C": [x.strftime("%H:%M") for x in bus_to_come_c]}}
     return JSONResponse(result)
 
 
@@ -171,3 +176,8 @@ async def get_food_menu(request: MenuRequest):
                            "dormitory": CafeteriaERICA.dorm_erica}
     restaurant = restaurant_list[request.restaurant]
     return get_recipe(campus=campus, cafeteria=restaurant)
+
+
+@hanyang_app_router.get('/food')
+async def get_food_menu():
+    return get_recipe_all_cafeteria()
