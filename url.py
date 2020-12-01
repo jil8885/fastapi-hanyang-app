@@ -175,7 +175,7 @@ async def get_food_menu(request: MenuRequest):
                            "foodcoart": CafeteriaERICA.foodcoart_erica, "changbo": CafeteriaERICA.changbo_erica,
                            "dormitory": CafeteriaERICA.dorm_erica}
     restaurant = restaurant_list[request.restaurant]
-    return get_recipe(campus=campus, cafeteria=restaurant)
+    return get_recipe(restaurant)
 
 
 @hanyang_app_router.get('/food')
