@@ -144,9 +144,8 @@ async def get_library_list():
 
     rooms = {"제1열람실": "reading_room_1", "제2열람실": "reading_room_2", "제3열람실": "reading_room_3", "제4열람실": "reading_room_4"}
     for name, room in response.items():
-        if room['available'] > -1:
+        if room['available'] > 0:
             topic = f"{rooms[name]}"
-            print(topic)
             # See documentation on defining a message payload.
             message = messaging.Message(
                 data={'type': 'reading_room', 'name': topic},
