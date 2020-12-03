@@ -129,7 +129,7 @@ async def get_library_list(request: CampusRequest):
     campus = request.campus == "Seoul"
     response = {}
     for x in get_reading_room_seat(campus=campus)[0]:
-        if "미개방" not in x['name']:
+        if "미개방" not in x['name'] and x['activeTotal'] > 0:
             response[x['name']] = {'active': x['activeTotal'], 'occupied': x['occupied'], 'available': x['available']}
 
     return JSONResponse(response)
@@ -142,22 +142,17 @@ async def get_library_list():
         if "미개방" not in x['name'] and x['activeTotal']:
             response[x['name']] = {'active': x['activeTotal'], 'occupied': x['occupied'], 'available': x['available']}
 
-    rooms = {"제1열람실": "room_1", "제2열람실": "room_2", "제3열람실": "room_3", "제4열람실": "room_4"}
-    languages = ["ko_KR", "en_US", "zh"]
+    rooms = {"제1열람실": "reading_room_1", "제2열람실": "reading_room_2", "제3열람실": "reading_room_3", "제4열람실": "reading_room_4"}
     for name, room in response.items():
-        if room['available'] > 0:
-            for lang in languages:
-                topic = f"{rooms[name]}_{lang}"
-                print(topic)
-                # See documentation on defining a message payload.
-                message = messaging.Message(
-                    notification=messaging.Notification(
-                        title=f"{name}에서 자리를 발견했다냥",
-                        body="어서 열람실로 돌진하라냥!"
-                    ),
-                    topic=topic,
-                )
-                messaging.send(message)
+        if room['available'] > -1:
+            topic = f"{rooms[name]}"
+            print(topic)
+            # See documentation on defining a message payload.
+            message = messaging.Message(
+                data={'type': 'reading_room', 'name': topic},
+                topic=topic,
+            )
+            messaging.send(message)
 
     return ''
 
