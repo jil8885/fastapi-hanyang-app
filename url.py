@@ -166,7 +166,7 @@ async def get_food_menu(request: MenuRequest):
                            "hangwon": CafeteriaSeoul.hangwon_seoul, "sarang": CafeteriaSeoul.sarang_seoul}
     else:
         restaurant_list = {"student": CafeteriaERICA.student_erica, "teacher": CafeteriaERICA.teacher_erica,
-                           "foodcoart": CafeteriaERICA.foodcoart_erica, "changbo": CafeteriaERICA.changbo_erica,
+                           "food_court": CafeteriaERICA.food_court_erica, "changbo": CafeteriaERICA.changbo_erica,
                            "dormitory": CafeteriaERICA.dorm_erica}
     restaurant = restaurant_list[request.restaurant]
     return get_recipe(restaurant)
