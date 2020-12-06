@@ -43,7 +43,7 @@ async def get_shuttle_stop(request: ShuttleRequest):
 async def get_shuttle_stop(request: ShuttleRequest):
     """Get Departure Info for specific bus stop"""
     bus_stop = request.busStop
-    bus_to_come_dh, bus_to_come_dy, bus_to_come_c, _ = get_departure_info(path=bus_stop, num_of_data=999)
+    bus_to_come_dh, bus_to_come_dy, bus_to_come_c, _ = get_departure_info(path=bus_stop, get_all=True)
     _, _, bus_info_dh, bus_info_dy, bus_info_c = get_first_last_departure(path=bus_stop)
     first_last_info = {"DH": [x.strftime("%H:%M") for x in bus_info_dh],
                        "DY": [x.strftime("%H:%M") for x in bus_info_dy], "C": [x.strftime("%H:%M") for x in bus_info_c]}
