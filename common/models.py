@@ -17,3 +17,7 @@ class BusRequest(BaseModel):
 class MenuRequest(BaseModel):
     campus: str
     restaurant: str
+
+
+class LanguageRequest(BaseModel):
+    language: str

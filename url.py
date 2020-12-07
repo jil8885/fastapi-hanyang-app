@@ -11,7 +11,7 @@ from library.reading_room import get_reading_room_seat
 
 from food.menu import CafeteriaSeoul, CafeteriaERICA, get_recipe, get_recipe_all_cafeteria
 
-from app.common.models import ShuttleRequest, CampusRequest, BusRequest, MenuRequest
+from app.common.models import ShuttleRequest, CampusRequest, BusRequest, MenuRequest, LanguageRequest
 
 hanyang_app_router = APIRouter()
 
@@ -144,7 +144,7 @@ async def get_library_list():
 
     rooms = {"제1열람실": "reading_room_1", "제2열람실": "reading_room_2", "제3열람실": "reading_room_3", "제4열람실": "reading_room_4"}
     for name, room in response.items():
-        if room['available'] > 0:
+        if room['available'] > -1:
             topic = f"{rooms[name]}"
             # See documentation on defining a message payload.
             message = messaging.Message(
@@ -156,7 +156,7 @@ async def get_library_list():
     return ''
 
 
-@hanyang_app_router.post('/food')
+@hanyang_app_router.post('/food/by-restaurant')
 async def get_food_menu(request: MenuRequest):
     campus = request.campus == "Seoul"
     if campus:
@@ -172,6 +172,6 @@ async def get_food_menu(request: MenuRequest):
     return get_recipe(restaurant)
 
 
-@hanyang_app_router.get('/food')
-async def get_food_menu():
-    return get_recipe_all_cafeteria()
+@hanyang_app_router.post('/food')
+async def get_food_menu(request: LanguageRequest):
+    return get_recipe_all_cafeteria(request.language)
