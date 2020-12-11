@@ -43,23 +43,27 @@ async def get_shuttle_stop(request: ShuttleRequest):
 async def get_shuttle_stop(request: ShuttleRequest):
     """Get Departure Info for specific bus stop"""
     bus_stop = request.busStop
-    bus_to_come_dh, bus_to_come_dy, bus_to_come_c, _ = get_departure_info(path=bus_stop, get_all=True)
     _, _, bus_info_dh, bus_info_dy, bus_info_c = get_first_last_departure(path=bus_stop)
     first_last_info = {"DH": [x.strftime("%H:%M") for x in bus_info_dh],
                        "DY": [x.strftime("%H:%M") for x in bus_info_dy], "C": [x.strftime("%H:%M") for x in bus_info_c]}
 
-    location = {"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj",
-                "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0",
-                "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
-
+    bus_to_come_dh_week, bus_to_come_dy_week, bus_to_come_c_week, _ = get_departure_info(path=bus_stop, get_all=True,
+                                                                                         fixed_date="week")
+    bus_to_come_dh_weekend, bus_to_come_dy_weekend, bus_to_come_c_weekend, _ = get_departure_info(path=bus_stop,
+                                                                                                  get_all=True,
+                                                                                                  fixed_date="weekend")
     stop_view = {"Shuttlecock_I": "http://kko.to/TyWyjU3Yp", "Subway": "http://kko.to/c93C0UFYj",
                  "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0",
                  "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
 
     result = {"location": "", "roadView": stop_view[bus_stop], "first_last": first_last_info,
-              "timetable": {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh],
-                            "DY": [x.strftime("%H:%M") for x in bus_to_come_dy],
-                            "C": [x.strftime("%H:%M") for x in bus_to_come_c]}}
+              "weekdays": {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh_week],
+                           "DY": [x.strftime("%H:%M") for x in bus_to_come_dy_week],
+                           "C": [x.strftime("%H:%M") for x in bus_to_come_c_week]},
+              "weekends": {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh_weekend],
+                           "DY": [x.strftime("%H:%M") for x in bus_to_come_dy_weekend],
+                           "C": [x.strftime("%H:%M") for x in bus_to_come_c_weekend]},
+              }
     return JSONResponse(result)
 
 
