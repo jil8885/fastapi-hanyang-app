@@ -128,6 +128,38 @@ async def get_bus_info_by_route(request: BusRequest):
                                  "timetable": []})
 
 
+@hanyang_app_router.post('/bus/timetable')
+async def get_bus_info_by_route(request: BusRequest):
+    _, is_weekend = is_semester()
+    is_weekend = True if is_weekend == 'weekend' else False
+    campus = request.campus == "Seoul"
+
+    guest_house_stop = '216000379'
+    main_gate_stop = '216000719'
+    line_10_1 = '216000068'
+    line_3102 = '216000061'
+    line_707_1 = '216000070'
+
+    if campus:
+        return JSONResponse({})
+    else:
+        if request.route == "10-1":
+            data = get_bus_timetable(is_weekend, "10-1", get_all=True)
+            print(data.keys())
+            return JSONResponse({
+                "weekdays": [{"time": x["time"].strftime("%H:%M")} for x in data["weekdays"]],
+                "saturday": [{"time": x["time"].strftime("%H:%M")} for x in data["sat"]],
+                "sunday": [{"time": x["time"].strftime("%H:%M")} for x in data["sun"]],
+            })
+        elif request.route == "3102":
+            data = get_bus_timetable(is_weekend, "3102", get_all=True)
+            return JSONResponse({
+                "weekdays": [{"time": x["time"].strftime("%H:%M")} for x in data["weekdays"]],
+                "saturday": [{"time": x["time"].strftime("%H:%M")} for x in data["sat"]],
+                "sunday": [{"time": x["time"].strftime("%H:%M")} for x in data["sun"]],
+            })
+
+
 @hanyang_app_router.post('/library')
 async def get_library_list(request: CampusRequest):
     campus = request.campus == "Seoul"
