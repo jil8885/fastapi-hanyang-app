@@ -145,7 +145,6 @@ async def get_bus_info_by_route(request: BusRequest):
     else:
         if request.route == "10-1":
             data = get_bus_timetable(is_weekend, "10-1", get_all=True)
-            print(data.keys())
             return JSONResponse({
                 "weekdays": [{"time": x["time"].strftime("%H:%M")} for x in data["weekdays"]],
                 "saturday": [{"time": x["time"].strftime("%H:%M")} for x in data["sat"]],
@@ -181,14 +180,15 @@ async def get_library_list():
     rooms = {"제1열람실": "reading_room_1", "제2열람실": "reading_room_2", "제3열람실": "reading_room_3", "제4열람실": "reading_room_4"}
     for name, room in response.items():
         if room['available'] > 0:
-            topic = f"{rooms[name]}"
-            # See documentation on defining a message payload.
-            message = messaging.Message(
-                data={'type': 'reading_room', 'name': topic},
-                topic=topic,
-            )
-            messaging.send(message)
-
+            for language in ["ko_KR", "en_US", "zh"]:
+                topic = f"{rooms[name]}.{language}"
+                # See documentation on defining a message payload.
+                message = messaging.Message(
+                    data={'type': 'reading_room', 'name': topic.split(".")[0], "language": language.split("_")[0]},
+                    topic=topic,
+                    android=messaging.AndroidConfig(priority="high")
+                )
+                messaging.send(message)
     return ''
 
 
