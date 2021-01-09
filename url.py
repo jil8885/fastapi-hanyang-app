@@ -154,6 +154,7 @@ async def get_bus_info_by_route(request: BusRequest):
                 "weekdays": [{"time": x["time"].strftime("%H:%M")} for x in data["weekdays"]],
                 "saturday": [{"time": x["time"].strftime("%H:%M")} for x in data["sat"]],
                 "sunday": [{"time": x["time"].strftime("%H:%M")} for x in data["sun"]],
+                "day": which_weekday()
             })
 
 
