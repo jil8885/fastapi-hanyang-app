@@ -89,9 +89,7 @@ async def get_subway(request: CampusRequest):
 @hanyang_app_router.post('/bus')
 async def get_bus_info_list(request: CampusRequest):
     _, is_weekend = is_semester()
-    is_weekend = True if is_weekend == 'weekend' else False
     campus = request.campus == "Seoul"
-
     if campus:
         return JSONResponse({})
     else:
