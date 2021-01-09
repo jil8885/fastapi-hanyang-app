@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from firebase_admin import messaging
 
 from transport.shuttle.get_info import get_departure_info, get_first_last_departure
-from transport.shuttle.date import is_semester
+from transport.shuttle.date import is_semester, which_weekday
 from transport.bus.get_arrival_info import get_bus_info, get_bus_timetable, get_realtime_departure
 from transport.subway.get_info import get_subway_info, get_subway_timetable
 
@@ -56,7 +56,7 @@ async def get_shuttle_stop(request: ShuttleRequest):
                  "Residence": "http://kko.to/R-l1jU3DT", "YesulIn": "http://kko.to/7mzoYUFY0",
                  "Shuttlecock_O": "http://kko.to/v-3DYI3YM"}
 
-    result = {"location": "", "roadView": stop_view[bus_stop], "first_last": first_last_info,
+    result = {"location": "", "roadView": stop_view[bus_stop], "first_last": first_last_info, "day": which_weekday(),
               "weekdays": {"DH": [x.strftime("%H:%M") for x in bus_to_come_dh_week],
                            "DY": [x.strftime("%H:%M") for x in bus_to_come_dy_week],
                            "C": [x.strftime("%H:%M") for x in bus_to_come_c_week]},
