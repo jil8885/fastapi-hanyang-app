@@ -94,14 +94,13 @@ async def get_bus_info_list(request: CampusRequest):
         return JSONResponse({})
     else:
         return JSONResponse({"realtime": get_bus_info(), "timetable": {
-            "10-1": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(is_weekend)["10-1"]],
-            "3102": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(is_weekend)["3102"]]}})
+            "10-1": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(which_weekday())["10-1"]],
+            "3102": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(which_weekday())["3102"]]}})
 
 
 @hanyang_app_router.post('/bus/by-route')
 async def get_bus_info_by_route(request: BusRequest):
     _, is_weekend = is_semester()
-    is_weekend = True if is_weekend == 'weekend' else False
     campus = request.campus == "Seoul"
 
     guest_house_stop = '216000379'
@@ -116,11 +115,11 @@ async def get_bus_info_by_route(request: BusRequest):
         if request.route == "10-1":
             return JSONResponse({"realtime": get_realtime_departure(guest_house_stop, line_10_1),
                                  "timetable": [{"time": x["time"].strftime("%H:%M")} for x in
-                                               get_bus_timetable(is_weekend, "10-1")]})
+                                               get_bus_timetable(which_weekday(), "10-1")]})
         elif request.route == "3102":
             return JSONResponse({"realtime": get_realtime_departure(guest_house_stop, line_3102),
                                  "timetable": [{"time": x["time"].strftime("%H:%M")} for x in
-                                               get_bus_timetable(is_weekend, "3102")]})
+                                               get_bus_timetable(which_weekday(), "3102")]})
         else:
             return JSONResponse({"realtime": get_realtime_departure(main_gate_stop, line_707_1),
                                  "timetable": []})
@@ -142,14 +141,15 @@ async def get_bus_info_by_route(request: BusRequest):
         return JSONResponse({})
     else:
         if request.route == "10-1":
-            data = get_bus_timetable(is_weekend, "10-1", get_all=True)
+            data = get_bus_timetable(which_weekday(), "10-1", get_all=True)
             return JSONResponse({
                 "weekdays": [{"time": x["time"].strftime("%H:%M")} for x in data["weekdays"]],
                 "saturday": [{"time": x["time"].strftime("%H:%M")} for x in data["sat"]],
                 "sunday": [{"time": x["time"].strftime("%H:%M")} for x in data["sun"]],
+                "day": which_weekday()
             })
         elif request.route == "3102":
-            data = get_bus_timetable(is_weekend, "3102", get_all=True)
+            data = get_bus_timetable(which_weekday(), "3102", get_all=True)
             return JSONResponse({
                 "weekdays": [{"time": x["time"].strftime("%H:%M")} for x in data["weekdays"]],
                 "saturday": [{"time": x["time"].strftime("%H:%M")} for x in data["sat"]],
