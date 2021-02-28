@@ -95,7 +95,9 @@ async def get_bus_info_list(request: CampusRequest):
     else:
         return JSONResponse({"realtime": get_bus_info(), "timetable": {
             "10-1": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(which_weekday())["10-1"]],
-            "3102": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(which_weekday())["3102"]]}})
+            "3102": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(which_weekday())["3102"]],
+            "707-1": [{"time": x["time"].strftime("%H:%M")} for x in get_bus_timetable(which_weekday())["707-1"]]
+        }})
 
 
 @hanyang_app_router.post('/bus/by-route')
@@ -131,12 +133,6 @@ async def get_bus_info_by_route(request: BusRequest):
     is_weekend = True if is_weekend == 'weekend' else False
     campus = request.campus == "Seoul"
 
-    guest_house_stop = '216000379'
-    main_gate_stop = '216000719'
-    line_10_1 = '216000068'
-    line_3102 = '216000061'
-    line_707_1 = '216000070'
-
     if campus:
         return JSONResponse({})
     else:
@@ -156,7 +152,14 @@ async def get_bus_info_by_route(request: BusRequest):
                 "sunday": [{"time": x["time"].strftime("%H:%M")} for x in data["sun"]],
                 "day": which_weekday()
             })
-
+        elif request.route == "707-1":
+            data = get_bus_timetable(which_weekday(), "707-1", get_all=True)
+            return JSONResponse({
+                "weekdays": [{"time": x["time"].strftime("%H:%M")} for x in data["weekdays"]],
+                "saturday": [{"time": x["time"].strftime("%H:%M")} for x in data["sat"]],
+                "sunday": [{"time": x["time"].strftime("%H:%M")} for x in data["sun"]],
+                "day": which_weekday()
+            })
 
 @hanyang_app_router.post('/library')
 async def get_library_list(request: CampusRequest):
